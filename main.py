@@ -1,17 +1,22 @@
 from tkinter import Tk
-from math import sin
-
 from BasicDraw import BasicDraw
 
-WIDTH, HEIGHT = 640, 480
+MAX_X, MAX_Y = 640, 480
 
 window = Tk()
 window.title("VCuber - Made By Evyde")
 
-a = BasicDraw(window, WIDTH, HEIGHT)
+a = BasicDraw(window, MAX_X, MAX_Y)
 
-for x in range(4 * WIDTH):
-    y = int(HEIGHT/2 + HEIGHT/4 * sin(x/80.0))
-    a.draw_pixel(x // 4, y)
+
+
+a.draw_line(-50, -50, 50, 50)
+a.draw_line(50, -50, -50, 50)
+a.draw_line(50, 50, -50, 50)
+a.draw_line(50, 50, 50, -50)
+a.draw_line(-50, -50, -50, 50)
+a.draw_line(-50, -50, 50, -50)
+
+a.polygon_fill([(-49, -49), (49, -49), (49, 49), (-49, 49)], "#37b336")
 
 window.mainloop()
