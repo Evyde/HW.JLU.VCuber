@@ -1,3 +1,4 @@
+from collections import defaultdict
 from tkinter import Canvas
 
 
@@ -14,7 +15,7 @@ class BasicDraw:
         # It is faster than PhotoImage.put() according to https://gist.github.com/calebmadrigal/81f3b9de14f54ac355f7
         self.panel.create_rectangle(self.map_coordinates(x, y), outline=color)
 
-    def draw_pixels(self, coordinates: list, custom_color=False):
+    def draw_pixels(self, coordinates: list[tuple], custom_color=False):
         color = "#000000"
         for coordinate in coordinates:
             if custom_color:
@@ -48,6 +49,18 @@ class BasicDraw:
             else:
                 p += 2 * dy
             x += step_x
+
+    def draw_lines(self, coordinates: list[tuple], custom_color=False):
+        color = "#000000"
+        for coordinate in coordinates:
+            if custom_color:
+                start_x, start_y, end_x, end_y, color = coordinate
+            else:
+                start_x, start_y, end_x, end_y = coordinate
+            self.draw_line(start_x, start_y, end_x, end_y, color)
+
+    def draw_cube(self, vertices):
+        pass
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point
