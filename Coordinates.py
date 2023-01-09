@@ -47,6 +47,14 @@ def project_3d_to_2d_ortho(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_
     return normalize_2d((coordinates[0], coordinates[1]))
 
 
+def project_3d_to_2d_ortho_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+    temp_list = []
+    for i in coordinates:
+        x, y, z = i
+        temp_list.append(project_3d_to_2d_ortho(x, y, z, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z))
+    return tuple(temp_list)
+
+
 def get_vertices(x, y, z, n):
     """Returns the vertices of a cube with center (x, y, z) and side length 2n."""
     return ([

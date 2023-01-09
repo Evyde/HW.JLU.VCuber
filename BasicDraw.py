@@ -72,18 +72,19 @@ class BasicDraw:
             self.draw_line(start_x, start_y, end_x, end_y, custom_color)
         start_x, start_y = coordinates[-1]
         end_x, end_y = coordinates[0]
-        self.draw_line(start_x, start_y, end_x, end_y, custom_color)
+        self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1)
 
     def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[]):
+        print("=" * 30)
+        print("Start drawing cube.")
+        print("=" * 30)
         for i in range(6):
-            list_2d = []
-            for j in coordinates[i]:
-                list_2d.append(Coordinates.project_3d_to_2d_ortho(j[0], j[1], j[2], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z))
             if custom_color:
                 color = custom_color[i]
             else:
                 color = "#000000"
-            self.draw_rectangle(tuple(list_2d), color)
+            color = ['#c7980a', '#f4651f', '#82d8a7', '#cc3a05', '#575e76', '#156943', '#0bd055', '#acd338']
+            self.draw_rectangle(Coordinates.project_3d_to_2d_ortho_coordinates(coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color[i])
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point
