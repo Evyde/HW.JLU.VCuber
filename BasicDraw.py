@@ -12,6 +12,9 @@ class BasicDraw:
         canvas.pack()
         self.panel = canvas
 
+    def clear(self):
+        self.panel.delete("all")
+
     def draw_pixel(self, x: int, y: int, color="#000000"):
         # :) Treat 0 square's rectangle as a pixel.
         # It is faster than PhotoImage.put() according to https://gist.github.com/calebmadrigal/81f3b9de14f54ac355f7
@@ -84,8 +87,8 @@ class BasicDraw:
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point
-        min_y = int(min(polygon, key=lambda x: x[1])[1])
-        max_y = int(max(polygon, key=lambda x: x[1])[1])
+        min_y = int(min(polygon, key=lambda temp_y: temp_y[1])[1])
+        max_y = int(max(polygon, key=lambda temp_y: temp_y[1])[1])
 
         for y in range(min_y, max_y + 1):
             # Find edge point in this line
