@@ -65,19 +65,19 @@ class BasicDraw:
             self.draw_line(start_x, start_y, end_x, end_y, color)
 
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000"):
-        print(coordinates)
         for i in range(len(coordinates) - 1):
             start_x, start_y = coordinates[i]
+            start_x, start_y = self.map_coordinates(start_x, start_y)
             end_x, end_y = coordinates[i + 1]
-            self.draw_line(start_x, start_y, end_x, end_y, custom_color)
+            end_x, end_y = self.map_coordinates(end_x, end_y)
+            self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
         start_x, start_y = coordinates[-1]
+        start_x, start_y = self.map_coordinates(start_x, start_y)
         end_x, end_y = coordinates[0]
-        self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1)
+        end_x, end_y = self.map_coordinates(end_x, end_y)
+        self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
 
     def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[]):
-        print("=" * 30)
-        print("Start drawing cube.")
-        print("=" * 30)
         for i in range(6):
             if custom_color:
                 color = custom_color[i]
@@ -113,4 +113,4 @@ class BasicDraw:
     def map_coordinates(self, x, y):
         x += self.WIDTH // 2
         y += self.HEIGHT // 2
-        return (x, y) * 2
+        return (x, y)
