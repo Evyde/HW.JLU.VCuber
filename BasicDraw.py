@@ -1,6 +1,8 @@
 from collections import defaultdict
 from tkinter import Canvas
 
+import Coordinates
+
 
 class BasicDraw:
     def __init__(self, window, width: int, height: int, background_color="#ffffff"):
@@ -50,7 +52,7 @@ class BasicDraw:
                 p += 2 * dy
             x += step_x
 
-    def draw_lines(self, coordinates: list[tuple], custom_color=False):
+    def draw_lines(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
         for coordinate in coordinates:
             if custom_color:
@@ -59,8 +61,26 @@ class BasicDraw:
                 start_x, start_y, end_x, end_y = coordinate
             self.draw_line(start_x, start_y, end_x, end_y, color)
 
-    def draw_cube(self, vertices):
-        pass
+    def draw_rectangle(self, coordinates: tuple, custom_color="#000000"):
+        print(coordinates)
+        for i in range(len(coordinates) - 1):
+            start_x, start_y = coordinates[i]
+            end_x, end_y = coordinates[i + 1]
+            self.draw_line(start_x, start_y, end_x, end_y, custom_color)
+        start_x, start_y = coordinates[-1]
+        end_x, end_y = coordinates[0]
+        self.draw_line(start_x, start_y, end_x, end_y, custom_color)
+
+    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[]):
+        for i in range(6):
+            list_2d = []
+            for j in coordinates[i]:
+                list_2d.append(Coordinates.project_3d_to_2d_ortho(j[0], j[1], j[2], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z))
+            if custom_color:
+                color = custom_color[i]
+            else:
+                color = "#000000"
+            self.draw_rectangle(tuple(list_2d), color)
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point

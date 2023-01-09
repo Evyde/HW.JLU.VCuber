@@ -20,20 +20,8 @@ r = 0
 def test():
     global r
     r += 1
-    print(Coordinates.get_faces(simple_cube))
-    lines = []
-    for i in Coordinates.get_faces(simple_cube):
-        temp_line = []
-        for j in i:
-            x, y, z = j
-            for t in Coordinates.project_3d_to_2d_ortho(x, y, z, rot_z=r):
-                temp_line.append(t)
-        lines.append(tuple(temp_line))
-
-    print(lines)
-
-    a.draw_lines(lines)
-    window.after(100, test)
+    a.draw_cube(simple_cube, rot_z=r)
+    # window.after(100, test)
 
 
 # a.polygon_fill([(-49, -49), (49, -49), (49, 49), (-49, 49)], "#37b336")

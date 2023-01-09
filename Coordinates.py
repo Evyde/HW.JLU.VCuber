@@ -1,3 +1,15 @@
+def normalize_3d(position):
+    x, y, z = position
+    x, y, z = (int(round(x)), int(round(y)), int(round(z)))
+    return (x, y, z)
+
+
+def normalize_2d(position):
+    x, y = position
+    x, y = (int(round(x)), int(round(y)))
+    return (x, y)
+
+
 def project_3d_to_2d_ortho(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
     """Project 3D coordinates to 2D coordinates using an orthographic projection.
 
@@ -32,43 +44,16 @@ def project_3d_to_2d_ortho(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_
     coordinates += np.array([trans_x, trans_y, trans_z])
 
     # Project to 2D using an orthographic projection
-    return coordinates[0], coordinates[1]
+    return normalize_2d((coordinates[0], coordinates[1]))
 
 
 def get_vertices(x, y, z, n):
     """Returns the vertices of a cube with center (x, y, z) and side length 2n."""
-    vertices = []
-    for i in [-1, 1]:
-        for j in [-1, 1]:
-            for k in [-1, 1]:
-                vertices.append((x + i*n, y + j*n, z + k*n))
-    return vertices
-
-
-def get_faces(vertices):
-    """Returns the faces of a cube given a list of its vertices."""
-    faces = []
-    for i in range(len(vertices)):
-        for j in range(i+1, len(vertices)):
-            if vertices[i][0] == vertices[j][0] and vertices[i][1] == vertices[j][1]:
-                # x and y coordinates are the same, so the vertices are on the same face
-                face = [vertices[i], vertices[j]]
-                for k in range(len(vertices)):
-                    if vertices[k][0] == vertices[i][0] and vertices[k][1] == vertices[i][1] and vertices[k] not in face:
-                        face.append(vertices[k])
-                faces.append(face)
-            elif vertices[i][0] == vertices[j][0] and vertices[i][2] == vertices[j][2]:
-                # x and z coordinates are the same, so the vertices are on the same face
-                face = [vertices[i], vertices[j]]
-                for k in range(len(vertices)):
-                    if vertices[k][0] == vertices[i][0] and vertices[k][2] == vertices[i][2] and vertices[k] not in face:
-                        face.append(vertices[k])
-                faces.append(face)
-            elif vertices[i][1] == vertices[j][1] and vertices[i][2] == vertices[j][2]:
-                # y and z coordinates are the same, so the vertices are on the same face
-                face = [vertices[i], vertices[j]]
-                for k in range(len(vertices)):
-                    if vertices[k][1] == vertices[i][1] and vertices[k][2] == vertices[i][2] and vertices[k] not in face:
-                        face.append(vertices[k])
-                faces.append(face)
-    return faces
+    return ([
+        ((x - n, y + n, z - n), (x - n, y + n, z + n), (x + n, y + n, z + n), (x + n, y + n, z - n)),  # top
+        ((x - n, y - n, z - n), (x + n, y - n, z - n), (x + n, y - n, z + n), (x - n, y - n, z + n)),  # bottom
+        ((x - n, y - n, z - n), (x - n, y - n, z + n), (x - n, y + n, z + n), (x - n, y + n, z - n)),  # left
+        ((x + n, y - n, z + n), (x + n, y - n, z - n), (x + n, y + n, z - n), (x + n, y + n, z + n)),  # right
+        ((x - n, y - n, z + n), (x + n, y - n, z + n), (x + n, y + n, z + n), (x - n, y + n, z + n)),  # front
+        ((x + n, y - n, z - n), (x - n, y - n, z - n), (x - n, y + n, z - n), (x + n, y + n, z - n)),  # back
+    ])
