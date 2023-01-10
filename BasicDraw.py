@@ -20,7 +20,7 @@ class BasicDraw:
         # It is faster than PhotoImage.put() according to https://gist.github.com/calebmadrigal/81f3b9de14f54ac355f7
         self.panel.create_rectangle(self.map_coordinates(x, y), outline=color)
 
-    def draw_pixels(self, coordinates: list[tuple], custom_color=False):
+    def draw_pixels(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
         for coordinate in coordinates:
             if custom_color:
@@ -88,7 +88,7 @@ class BasicDraw:
             else:
                 color = "#000000"
             color = ['#c7980a', '#f4651f', '#82d8a7', '#cc3a05', '#575e76', '#156943', '#0bd055', '#acd338']
-            self.draw_rectangle(Coordinates.project_3d_to_2d_ortho_coordinates(coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color[i])
+            self.draw_rectangle(Coordinates.project_3d_to_2d_oblique_coordinates(coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color[i])
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point
