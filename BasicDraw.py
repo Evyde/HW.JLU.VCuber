@@ -29,31 +29,37 @@ class BasicDraw:
                 x, y = coordinate
             self.draw_pixel(x, y, color)
 
-    def draw_line(self, start_x: int, start_y: int, end_x: int, end_y: int, color="#000000"):
+    def draw_line(self, start_x: int, start_y: int, end_x: int, end_y: int, color="#000000", enable_warning=False):
         # Use Bresenham to draw a line
         if start_x == end_x and start_y == end_y:
             self.draw_pixel(start_x, start_y, color)
-            print("DO NOT TRY TO USE DRAW_LINE TO DRAW A PIXEL, USE DRAW_PIXEL INSTEAD!")
+            if enable_warning:
+                print("DO NOT TRY TO USE DRAW_LINE TO DRAW A PIXEL, USE DRAW_PIXEL INSTEAD!")
             return
-        x = start_x
-        y = start_y
         dx = abs(end_x - start_x)
         dy = abs(end_y - start_y)
-        step_x = 1 if end_x > start_x else 0 if end_x == start_x else -1
-        step_y = 1 if end_y > start_y else 0 if end_y == start_y else -1
-        p = 2 * dy - dx
+        x, y = start_x, start_y
+        sx = -1 if start_x > end_x else 1
+        sy = -1 if start_y > end_y else 1
 
-        while (x <= (end_x if end_x > start_x else start_x)) and (
-                x >= (end_x if end_x < start_x else start_x)) and (
-                y <= (end_y if end_y > start_y else start_y)) and (
-                y >= (end_y if end_y < start_y else start_y)):
-            self.draw_pixel(x, y, color)
-            if p >= 0:
-                y += step_y
-                p += 2 * (dy - dx)
-            else:
-                p += 2 * dy
-            x += step_x
+        if dx > dy:
+            err = dx / 2.0
+            while x != end_x:
+                self.draw_pixel(x, y, color)
+                err -= dy
+                if err < 0:
+                    y += sy
+                    err += dx
+                x += sx
+        else:
+            err = dy / 2.0
+            while y != end_y:
+                self.draw_pixel(x, y, color)
+                err -= dx
+                if err < 0:
+                    x += sx
+                    err += dy
+                y += sy
 
     def draw_lines(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
@@ -67,15 +73,13 @@ class BasicDraw:
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000"):
         for i in range(len(coordinates) - 1):
             start_x, start_y = coordinates[i]
-            start_x, start_y = self.map_coordinates(start_x, start_y)
             end_x, end_y = coordinates[i + 1]
-            end_x, end_y = self.map_coordinates(end_x, end_y)
-            self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
+            self.draw_line(start_x, start_y, end_x, end_y, custom_color)
+            # self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
         start_x, start_y = coordinates[-1]
-        start_x, start_y = self.map_coordinates(start_x, start_y)
         end_x, end_y = coordinates[0]
-        end_x, end_y = self.map_coordinates(end_x, end_y)
-        self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
+        self.draw_line(start_x, start_y, end_x, end_y, custom_color)
+        # self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
 
     def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[]):
         for i in range(6):
@@ -113,4 +117,4 @@ class BasicDraw:
     def map_coordinates(self, x, y):
         x += self.WIDTH // 2
         y += self.HEIGHT // 2
-        return (x, y)
+        return (x, y) * 2
