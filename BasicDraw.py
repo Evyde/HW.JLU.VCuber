@@ -5,6 +5,21 @@ import Coordinates
 
 
 class BasicDraw:
+    projection_map_dict = {
+        "斜二测": {
+            "single": Coordinates.project_3d_to_2d_oblique,
+            "multi": Coordinates.project_3d_to_2d_oblique_coordinates
+        },
+        "正": {
+            "single": Coordinates.project_3d_to_2d_ortho,
+            "multi": Coordinates.project_3d_to_2d_ortho_coordinates
+        },
+        "斜等轴": {
+            "single": Coordinates.project_3d_to_2d_isometric,
+            "multi": Coordinates.project_3d_to_2d_isometric_coordinates
+        }
+    }
+
     def __init__(self, window, width: int, height: int, background_color="#ffffff"):
         self.WIDTH = width
         self.HEIGHT = height
@@ -18,7 +33,7 @@ class BasicDraw:
     def draw_pixel(self, x: int, y: int, color="#000000"):
         # :) Treat 0 square's rectangle as a pixel.
         # It is faster than PhotoImage.put() according to https://gist.github.com/calebmadrigal/81f3b9de14f54ac355f7
-        self.panel.create_rectangle(self.map_coordinates(x, y), outline=color)
+        self.panel.create_oval(self.map_coordinates(x, y), outline=color, width=1)
 
     def draw_pixels(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
@@ -29,37 +44,10 @@ class BasicDraw:
                 x, y = coordinate
             self.draw_pixel(x, y, color)
 
-    def draw_line(self, start_x: int, start_y: int, end_x: int, end_y: int, color="#000000", enable_warning=False):
-        # Use Bresenham to draw a line
-        if start_x == end_x and start_y == end_y:
-            self.draw_pixel(start_x, start_y, color)
-            if enable_warning:
-                print("DO NOT TRY TO USE DRAW_LINE TO DRAW A PIXEL, USE DRAW_PIXEL INSTEAD!")
-            return
-        dx = abs(end_x - start_x)
-        dy = abs(end_y - start_y)
-        x, y = start_x, start_y
-        sx = -1 if start_x > end_x else 1
-        sy = -1 if start_y > end_y else 1
+    def draw_line(self, start_x: int, start_y: int, end_x: int, end_y: int, color="#000000"):
+        for coordinate in Coordinates.bresenham(start_x, start_y, end_x, end_y):
+            self.draw_pixel(coordinate[0], coordinate[1], color)
 
-        if dx > dy:
-            err = dx / 2.0
-            while x != end_x:
-                self.draw_pixel(x, y, color)
-                err -= dy
-                if err < 0:
-                    y += sy
-                    err += dx
-                x += sx
-        else:
-            err = dy / 2.0
-            while y != end_y:
-                self.draw_pixel(x, y, color)
-                err -= dx
-                if err < 0:
-                    x += sx
-                    err += dy
-                y += sy
 
     def draw_lines(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
@@ -71,24 +59,21 @@ class BasicDraw:
             self.draw_line(start_x, start_y, end_x, end_y, color)
 
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000"):
-        for i in range(len(coordinates) - 1):
+        lines = len(coordinates)
+        for i in range(lines):
             start_x, start_y = coordinates[i]
-            end_x, end_y = coordinates[i + 1]
+            end_x, end_y = coordinates[(i + 1) % lines]
             self.draw_line(start_x, start_y, end_x, end_y, custom_color)
             # self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
-        start_x, start_y = coordinates[-1]
-        end_x, end_y = coordinates[0]
-        self.draw_line(start_x, start_y, end_x, end_y, custom_color)
-        # self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
 
-    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[]):
+    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[], method="正"):
         for i in range(6):
             if custom_color:
                 color = custom_color[i]
             else:
                 color = "#000000"
             color = ['#c7980a', '#f4651f', '#82d8a7', '#cc3a05', '#575e76', '#156943', '#0bd055', '#acd338']
-            self.draw_rectangle(Coordinates.project_3d_to_2d_oblique_coordinates(coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color[i])
+            self.draw_rectangle(BasicDraw.projection_map_dict[method]["multi"](coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color[i])
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point

@@ -15,6 +15,37 @@ def normalize_2d(position):
     return (x, y)
 
 
+def bresenham(start_x, start_y, end_x, end_y):
+    coordinates = []
+    # Use Bresenham to draw a line
+    if start_x == end_x and start_y == end_y:
+        coordinates.append((start_x, start_y))
+        return coordinates
+    dx = abs(end_x - start_x)
+    dy = abs(end_y - start_y)
+    x, y = start_x, start_y
+    sx = -1 if start_x > end_x else 1
+    sy = -1 if start_y > end_y else 1
+
+    if dx > dy:
+        err = dx / 2.0
+        while x != end_x:
+            coordinates.append((x, y))
+            err -= dy
+            if err < 0:
+                y += sy
+                err += dx
+            x += sx
+    else:
+        err = dy / 2.0
+        while y != end_y:
+            coordinates.append((x, y))
+            err -= dx
+            if err < 0:
+                x += sx
+                err += dy
+            y += sy
+    return coordinates
 def project_3d_to_2d_oblique(x, y, z, angle=45, distance=0, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
     """Project 3D coordinates to 2D coordinates using an oblique diagonal projection.
 
