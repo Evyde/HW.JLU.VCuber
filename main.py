@@ -24,11 +24,11 @@ j = 0
 def test():
     global r, j
     if j % 2 == 0:
-        r += math.pi / 1800
+        r += math.pi / 180
         a.clear()
         a.draw_cube(simple_cube, rot_z=r, rot_x=r, rot_y=r, trans_x=r, trans_y=r, trans_z=r, method="正")
     j += 1
-    window.after(1, test)
+    window.after(10, test)
 
 
 test()

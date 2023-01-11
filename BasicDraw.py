@@ -33,7 +33,10 @@ class BasicDraw:
     def draw_pixel(self, x: int, y: int, color="#000000"):
         # :) Treat 0 square's rectangle as a pixel.
         # It is faster than PhotoImage.put() according to https://gist.github.com/calebmadrigal/81f3b9de14f54ac355f7
-        self.panel.create_oval(self.map_coordinates(x, y), outline=color, width=1)
+        start_x, start_y, end_x, end_y = self.map_coordinates(x, y)
+        end_x += 1
+        end_y += 1
+        self.panel.create_line(start_x, start_y, end_x, end_y, fill=color)
 
     def draw_pixels(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
