@@ -1,22 +1,20 @@
-from collections import defaultdict
 from tkinter import Canvas
-
 import Coordinates
 
 
 class BasicDraw:
     projection_map_dict = {
-        "斜二测": {
-            "single": Coordinates.project_3d_to_2d_bipolar,
-            "multi": Coordinates.project_3d_to_2d_bipolar_coordinates
-        },
         "正": {
             "single": Coordinates.project_3d_to_2d_ortho,
             "multi": Coordinates.project_3d_to_2d_ortho_coordinates
         },
         "斜等轴": {
-            "single": Coordinates.project_3d_to_2d_isometric,
-            "multi": Coordinates.project_3d_to_2d_isometric_coordinates
+            "single": Coordinates.project_3d_to_2d_oblique_isometric,
+            "multi": Coordinates.project_3d_to_2d_oblique_isometric_coordinates
+        },
+        "斜二测": {
+            "single": Coordinates.project_3d_to_2d_oblique_diametric,
+            "multi": Coordinates.project_3d_to_2d_oblique_diametric_coordinates
         }
     }
 
@@ -24,6 +22,7 @@ class BasicDraw:
         self.WIDTH = width
         self.HEIGHT = height
         if not canvas:
+            # Create default canvas
             canvas = Canvas(window, width=width, height=height, bg=background_color)
         canvas.pack()
         self.panel = canvas

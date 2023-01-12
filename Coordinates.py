@@ -48,32 +48,6 @@ def bresenham(start_x, start_y, end_x, end_y):
     return coordinates
 
 
-def project_3d_to_2d_bipolar(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
-    """Project 3D coordinates to 2D coordinates using an oblique diagonal projection.
-
-    Parameters
-    ----------
-    x, y, z : float
-        The 3D coordinates to be projected.
-    rot_x, rot_y, rot_z : float, optional
-        The angles of rotation around the x, y, and z axes, respectively. Default is 0 for all.
-    trans_x, trans_y, trans_z : float, optional
-        The translations along the x, y, and z axes, respectively. Default is 0 for all.
-
-    Returns
-    -------
-    tuple of float
-        The projected 2D coordinates.
-    """
-    # Apply rotations and translations
-    coords_rotated = basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z)
-
-    # Project to 2D using an oblique diagonal projection
-    x_proj = coords_rotated[0] + coords_rotated[2]
-    y_proj = coords_rotated[1] - coords_rotated[2]
-    return normalize_2d((x_proj, y_proj))
-
-
 def basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z):
     rot_x = np.deg2rad(rot_x)
     rot_y = np.deg2rad(rot_y)
@@ -98,15 +72,39 @@ def basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z):
     return coords
 
 
-def project_3d_to_2d_bipolar_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+def project_3d_to_2d_oblique_diametric(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+    """Project 3D coordinates to 2D coordinates using an oblique diametric projection.
+
+    Parameters
+    ----------
+    x, y, z : float
+        The 3D coordinates to be projected.
+    rot_x, rot_y, rot_z : float, optional
+        The angles of rotation around the x, y, and z axes, respectively. Default is 0 for all.
+    trans_x, trans_y, trans_z : float, optional
+        The translations along the x, y, and z axes, respectively. Default is 0 for all.
+
+    Returns
+    -------
+    tuple of float
+        The projected 2D coordinates.
+    """
+    # Apply rotations and translations
+    coords_rotated = basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z)
+    # Project to 2D using an oblique diagonal projection
+    x, y, z = coords_rotated
+    return normalize_2d((x + 0.354 * y, -0.354 * y + z))
+
+
+def project_3d_to_2d_oblique_diametric_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
     temp_list = []
     for i in coordinates:
         x, y, z = i
-        temp_list.append(project_3d_to_2d_bipolar(x, y, z, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z))
+        temp_list.append(project_3d_to_2d_oblique_diametric(x, y, z, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z))
     return tuple(temp_list)
 
 
-def project_3d_to_2d_isometric(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+def project_3d_to_2d_oblique_isometric(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
     """Project 3D coordinates to 2D coordinates using an oblique isometric projection.
 
     Parameters
@@ -126,17 +124,15 @@ def project_3d_to_2d_isometric(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, tr
     # Apply rotations and translations
     x, y, z = basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z)
     # Project to 2D using an oblique isometric projection
-    x_proj = np.cos(np.deg2rad(30)) * x - np.sin(np.deg2rad(30)) * y
-    y_proj = (np.sin(np.deg2rad(45)) / np.cos(np.deg2rad(30))) * x + (
-                np.cos(np.deg2rad(45)) / np.cos(np.deg2rad(30))) * y - z
-    return normalize_2d((x_proj, y_proj))
+
+    return normalize_2d((x - 0.707*y, +0.707*y + z))
 
 
-def project_3d_to_2d_isometric_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+def project_3d_to_2d_oblique_isometric_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
     temp_list = []
     for i in coordinates:
         x, y, z = i
-        temp_list.append(project_3d_to_2d_isometric(x, y, z, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z))
+        temp_list.append(project_3d_to_2d_oblique_isometric(x, y, z, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z))
     return tuple(temp_list)
 
 
