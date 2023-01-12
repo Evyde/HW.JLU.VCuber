@@ -36,7 +36,7 @@ panel.clear()
 panel.draw_rectangle(((0, 0), (0, 4), (4, 4), (4, 0)), custom_color="#f0f0f0")
 panel.polygon_fill(((0, 0), (0, 4), (4, 4), (4, 0)), color="#f0f0f0")
 # Pass verticals of 6 faces
-panel.draw_cube(((0, 0, 0), (), (), (), (), ()), rot_x=0, rot_y=0, rot_z=0)
+panel.draw_cube(((0, 0, 0), (), (), (), (), ()), rot_x=0, rot_y=0, rot_z=0, method="正")
 ```
 
 The init method of `BasicDraw` takes 4 arguments, which are:

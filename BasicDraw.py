@@ -7,8 +7,8 @@ import Coordinates
 class BasicDraw:
     projection_map_dict = {
         "斜二测": {
-            "single": Coordinates.project_3d_to_2d_oblique,
-            "multi": Coordinates.project_3d_to_2d_oblique_coordinates
+            "single": Coordinates.project_3d_to_2d_bipolar,
+            "multi": Coordinates.project_3d_to_2d_bipolar_coordinates
         },
         "正": {
             "single": Coordinates.project_3d_to_2d_ortho,
@@ -20,10 +20,11 @@ class BasicDraw:
         }
     }
 
-    def __init__(self, window, width: int, height: int, background_color="#ffffff"):
+    def __init__(self, window, width: int, height: int, background_color="#ffffff", canvas=None):
         self.WIDTH = width
         self.HEIGHT = height
-        canvas = Canvas(window, width=width, height=height, bg=background_color)
+        if not canvas:
+            canvas = Canvas(window, width=width, height=height, bg=background_color)
         canvas.pack()
         self.panel = canvas
 
@@ -48,7 +49,6 @@ class BasicDraw:
         for coordinate in Coordinates.bresenham(start_x, start_y, end_x, end_y):
             self.draw_pixel(coordinate[0], coordinate[1], color)
 
-
     def draw_lines(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
         for coordinate in coordinates:
@@ -58,8 +58,10 @@ class BasicDraw:
                 start_x, start_y, end_x, end_y = coordinate
             self.draw_line(start_x, start_y, end_x, end_y, color)
 
-    def draw_rectangle(self, coordinates: tuple, custom_color="#000000"):
+    def draw_rectangle(self, coordinates: tuple, custom_color="#000000", fill=False):
         lines = len(coordinates)
+        if fill:
+            self.polygon_fill(coordinates, custom_color)
         for i in range(lines):
             start_x, start_y = coordinates[i]
             end_x, end_y = coordinates[(i + 1) % lines]
@@ -72,8 +74,7 @@ class BasicDraw:
                 color = custom_color[i]
             else:
                 color = "#000000"
-            color = ['#c7980a', '#f4651f', '#82d8a7', '#cc3a05', '#575e76', '#156943', '#0bd055', '#acd338']
-            self.draw_rectangle(BasicDraw.projection_map_dict[method]["multi"](coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color[i])
+            self.draw_rectangle(BasicDraw.projection_map_dict[method]["multi"](coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color)
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point
