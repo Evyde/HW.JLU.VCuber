@@ -30,7 +30,7 @@ def test_draw():
     r = r % 360
     frame += 1
     a.clear()
-    a.draw_cube(simple_cube, rot_z=r, rot_x=r, rot_y=r, trans_x=r, trans_y=r, trans_z=r, method="正",
+    a.draw_cube(simple_cube, rot_z=r, rot_x=r, rot_y=r, method="正",
                 custom_color=color_list)
     window.after(1, test_draw)
 

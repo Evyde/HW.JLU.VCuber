@@ -1,5 +1,8 @@
+import itertools
 from tkinter import Canvas
 import Coordinates
+
+# TODO: 将画坐标轴的步骤抽象，可以使用itertools.permutations，并且用一个点在坐标轴上表示正方体的位置（百分比计算）
 
 
 class BasicDraw:
