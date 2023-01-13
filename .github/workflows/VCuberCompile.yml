@@ -29,13 +29,14 @@ jobs:
         script-name: main.py
         standalone: true
         onefile: true
-        enable-plugins: tk-inter
+        enable-plugins: tk-inter, numpy
 
     - name: Deploy to pre-release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: true
+        automatic_release_tag: latest
         files: |
           LICENSE
           README.md
