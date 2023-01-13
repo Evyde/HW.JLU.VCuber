@@ -1,4 +1,5 @@
 import math
+import threading
 import time
 from tkinter import Tk
 from BasicDraw import BasicDraw
@@ -18,19 +19,28 @@ simple_cube = Coordinates.get_vertices(0, 0, 0, CUBE_LENGTH // 2)
 print(simple_cube)
 
 r = 0
-j = 0
+frame = 0
 
 color_list = ['#c7980a', '#f4651f', '#82d8a7', '#cc3a05', '#575e76', '#156943', '#0bd055', '#acd338']
 
 
 def test_draw():
-    global r, j
-    r += 0.1
+    global r, frame
+    r += 0.5
+    frame += 1
     a.clear()
     a.draw_cube(simple_cube, rot_z=r, rot_x=r, rot_y=r, trans_x=r, trans_y=r, trans_z=r, method="正",
                 custom_color=color_list)
-    window.after(10, test_draw)
+    window.after(1, test_draw)
+
+
+def timer():
+    global frame
+    print("FPS: {}".format(frame))
+    frame = 0
+    window.after(1000, timer)
 
 
 test_draw()
+timer()
 window.mainloop()
