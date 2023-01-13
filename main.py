@@ -27,6 +27,7 @@ color_list = ['#c7980a', '#f4651f', '#82d8a7', '#cc3a05', '#575e76', '#156943', 
 def test_draw():
     global r, frame
     r += 0.5
+    r = r % 360
     frame += 1
     a.clear()
     a.draw_cube(simple_cube, rot_z=r, rot_x=r, rot_y=r, trans_x=r, trans_y=r, trans_z=r, method="正",
@@ -34,13 +35,13 @@ def test_draw():
     window.after(1, test_draw)
 
 
-def timer():
+def fps_timer():
     global frame
     print("FPS: {}".format(frame))
     frame = 0
-    window.after(1000, timer)
+    window.after(1000, fps_timer)
 
 
 test_draw()
-timer()
+fps_timer()
 window.mainloop()

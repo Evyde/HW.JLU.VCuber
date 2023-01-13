@@ -57,6 +57,10 @@ class BasicDraw:
                 start_x, start_y, end_x, end_y = coordinate
             self.draw_line(start_x, start_y, end_x, end_y, color)
 
+    def draw_text(self, x: int, y: int, text="", color="#000000"):
+        x, y, _, _ = self.map_coordinates(x, y)
+        self.panel.create_text(x, y, text=text, fill=color)
+
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000", fill=False):
         lines = len(coordinates)
         if fill:
@@ -67,7 +71,24 @@ class BasicDraw:
             self.draw_line(start_x, start_y, end_x, end_y, custom_color)
             # self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
 
-    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[], method="正"):
+    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[], method="正", axis=True):
+        if axis:
+            start_x, start_y = BasicDraw.projection_map_dict[method]["single"](0, 0, 0, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z)
+            end_x, end_y = BasicDraw.projection_map_dict[method]["single"](-50, 0, 0, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z)
+            self.draw_line(start_x, start_y, end_x, end_y, color="#ff0000")
+            self.draw_text(end_x, end_y, text='X轴', color='#ff0000')
+            start_x, start_y = BasicDraw.projection_map_dict[method]["single"](0, 0, 0, rot_x, rot_y, rot_z, trans_x,
+                                                                               trans_y, trans_z)
+            end_x, end_y = BasicDraw.projection_map_dict[method]["single"](0, -50, 0, rot_x, rot_y, rot_z, trans_x,
+                                                                           trans_y, trans_z)
+            self.draw_line(start_x, start_y, end_x, end_y, color="#00ff00")
+            self.draw_text(end_x, end_y, text='Y轴', color='#00ff00')
+            start_x, start_y = BasicDraw.projection_map_dict[method]["single"](0, 0, 0, rot_x, rot_y, rot_z, trans_x,
+                                                                               trans_y, trans_z)
+            end_x, end_y = BasicDraw.projection_map_dict[method]["single"](0, 0, -50, rot_x, rot_y, rot_z, trans_x,
+                                                                           trans_y, trans_z)
+            self.draw_line(start_x, start_y, end_x, end_y, color="#0000ff")
+            self.draw_text(end_x, end_y, text='Z轴', color='#0000ff')
         for i in range(6):
             if custom_color:
                 color = custom_color[i]
