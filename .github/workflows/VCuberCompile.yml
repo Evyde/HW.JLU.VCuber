@@ -40,4 +40,4 @@ jobs:
         files: |
           LICENSE
           README.md
-          *.exe
+          build/*.exe
