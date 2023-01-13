@@ -1,5 +1,7 @@
 # VCuber
 
+[![VCuber | Compile](https://github.com/Evyde/VCuber/actions/workflows/VCuberCompile.yml/badge.svg?branch=master)](https://github.com/Evyde/VCuber/actions/workflows/VCuberCompile.yml)
+
 This is a homework from JLU's computer graphics lesson.
 
 ## Function
