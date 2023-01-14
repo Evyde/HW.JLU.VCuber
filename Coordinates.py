@@ -52,9 +52,6 @@ def basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z):
     rot_x = np.deg2rad(rot_x)
     rot_y = np.deg2rad(rot_y)
     rot_z = np.deg2rad(rot_z)
-    trans_x = np.deg2rad(trans_x)
-    trans_y = np.deg2rad(trans_y)
-    trans_z = np.deg2rad(trans_z)
 
     rot_matrix_x = np.array([[1, 0, 0],
                              [0, np.cos(rot_x), -np.sin(rot_x)],
@@ -96,7 +93,8 @@ def project_3d_to_2d_oblique_diametric(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans
     return normalize_2d((x + 0.354 * y, -0.354 * y + z))
 
 
-def project_3d_to_2d_oblique_diametric_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+def project_3d_to_2d_oblique_diametric_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0,
+                                                   trans_y=0, trans_z=0):
     temp_list = []
     for i in coordinates:
         x, y, z = i
@@ -125,10 +123,11 @@ def project_3d_to_2d_oblique_isometric(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans
     x, y, z = basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z)
     # Project to 2D using an oblique isometric projection
 
-    return normalize_2d((x - 0.707*y, +0.707*y + z))
+    return normalize_2d((x - 0.707 * y, +0.707 * y + z))
 
 
-def project_3d_to_2d_oblique_isometric_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+def project_3d_to_2d_oblique_isometric_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0,
+                                                   trans_y=0, trans_z=0):
     temp_list = []
     for i in coordinates:
         x, y, z = i
@@ -160,7 +159,8 @@ def project_3d_to_2d_ortho(x, y, z, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_
     return normalize_2d((coords[0], coords[1]))
 
 
-def project_3d_to_2d_ortho_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0):
+def project_3d_to_2d_ortho_coordinates(coordinates: tuple[tuple], rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0,
+                                       trans_z=0):
     temp_list = []
     for i in coordinates:
         x, y, z = i

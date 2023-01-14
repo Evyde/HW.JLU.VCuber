@@ -2,6 +2,7 @@ import itertools
 from tkinter import Canvas
 import Coordinates
 
+
 # TODO: 将画坐标轴的步骤抽象，可以使用itertools.permutations，并且用一个点在坐标轴上表示正方体的位置（百分比计算）
 
 
@@ -21,9 +22,14 @@ class BasicDraw:
         }
     }
 
-    def __init__(self, window, width: int, height: int, background_color="#ffffff", canvas=None):
+    def __init__(self, window, width: int, height: int, background_color="#ffffff", axis_x=0, axis_y=0,
+                 projection_method="正", canvas=None):
         self.WIDTH = width
         self.HEIGHT = height
+        self.axis_x = axis_x
+        self.axis_y = axis_y
+        self.projection_method = projection_method
+        self.axis_length = 0
         if not canvas:
             # Create default canvas
             canvas = Canvas(window, width=width, height=height, bg=background_color)
@@ -32,6 +38,13 @@ class BasicDraw:
 
     def clear(self):
         self.panel.delete("all")
+
+    def update_cached_variables(self):
+        pass
+
+    def change_projection_method(self, method: str):
+        self.projection_method = method
+        self.update_cached_variables()
 
     def draw_pixel(self, x: int, y: int, color="#000000"):
         # :) Treat 0 square's rectangle as a pixel.
@@ -64,6 +77,72 @@ class BasicDraw:
         x, y, _, _ = self.map_coordinates(x, y)
         self.panel.create_text(x, y, text=text, fill=color)
 
+    def draw_axis(self, axis_length, rot_x=0, rot_y=0, rot_z=0):
+        """
+
+        Parameters
+        ----------
+        rot_x, rot_y, rot_z
+            Rotation that you want to display this axis.
+        axis_length
+            Axis length, like 10 or 30.
+
+        Returns
+        -------
+        Nothing.
+        """
+        self.axis_length = axis_length
+        origin_coordinate = (0, 0, 0)
+        text_tuple = ("X轴", "Y轴", "Z轴")
+        origin_color = ("00", "00", "00")
+        start_x, start_y = self.axis_x, self.axis_y
+
+        for i in range(3):
+            temp_coordinate = list(origin_coordinate)
+            temp_color = list(origin_color)
+            temp_coordinate[i] = -axis_length
+            temp_color[i] = "ff"
+            temp_color = "#{}".format("".join(temp_color))
+            end_x, end_y, end_z = temp_coordinate
+            end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z, rot_x,
+                                                                                           rot_y, rot_z)
+            self.draw_line(start_x, start_y, start_x + end_x, start_y + end_y, color=temp_color)
+            self.draw_text(start_x + end_x, start_y + end_y, text=text_tuple[i], color=temp_color)
+
+    def draw_cube_status(self, cubes_status: dict):
+        """
+
+        Parameters
+        ----------
+        cubes_status
+            A dict that describe the cubes' status, for example:
+            {"Main_Cube": {"color": "#fff0f0", "center_x": 3, "center_y": 3, "center_z": 3}}
+            Temporarily fields could use:
+                - color: The color of the cube point.
+                - trans_x, trans_y, trans_z: The translations along the x, y, and z axes, respectively.
+                - center_x, center_y, center_z: The source center axes of this cube.
+
+        Returns
+        -------
+
+        """
+        for cube_name in cubes_status.keys():
+            # Draw oval that represent for cube.
+            # TODO: Map the coordinate first then project, like (0 + trans_x, 0 + trans_y, 0 + trans_z)
+            x, y = \
+                BasicDraw.projection_map_dict[self.projection_method]["single"](
+                        cubes_status[cube_name]["center_x"] + self.map_into_range(cubes_status[cube_name]["trans_x"], -self.WIDTH // 2, self.WIDTH // 2, 0, -self.axis_length),
+                        cubes_status[cube_name]["center_y"] + self.map_into_range(cubes_status[cube_name]["trans_y"], -self.HEIGHT // 2, self.HEIGHT // 2, 0, -self.axis_length),
+                        cubes_status[cube_name]["center_z"],
+                        rot_x=cubes_status[cube_name]["rot_x"],
+                        rot_y=cubes_status[cube_name]["rot_y"],
+                        rot_z=cubes_status[cube_name]["rot_z"]
+                    )
+            # Draw cube name
+            self.draw_text(self.axis_x + x, self.axis_y + y + 20, text=cube_name, color=cubes_status[cube_name]["color"])
+            # Draw cube point
+            self.panel.create_oval(self.map_coordinates(self.axis_x + x, self.axis_y + y), outline=cubes_status[cube_name]["color"], fill=cubes_status[cube_name]["color"], width=30)
+
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000", fill=False):
         lines = len(coordinates)
         if fill:
@@ -74,30 +153,18 @@ class BasicDraw:
             self.draw_line(start_x, start_y, end_x, end_y, custom_color)
             # self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
 
-    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[], method="正", axis=True):
-        if axis:
-            start_x, start_y = BasicDraw.projection_map_dict[method]["single"](0, 0, 0, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z)
-            end_x, end_y = BasicDraw.projection_map_dict[method]["single"](-50, 0, 0, rot_x, rot_y, rot_z, trans_x, trans_y, trans_z)
-            self.draw_line(start_x, start_y, end_x, end_y, color="#ff0000")
-            self.draw_text(end_x, end_y, text='X轴', color='#ff0000')
-            start_x, start_y = BasicDraw.projection_map_dict[method]["single"](0, 0, 0, rot_x, rot_y, rot_z, trans_x,
-                                                                               trans_y, trans_z)
-            end_x, end_y = BasicDraw.projection_map_dict[method]["single"](0, -50, 0, rot_x, rot_y, rot_z, trans_x,
-                                                                           trans_y, trans_z)
-            self.draw_line(start_x, start_y, end_x, end_y, color="#00ff00")
-            self.draw_text(end_x, end_y, text='Y轴', color='#00ff00')
-            start_x, start_y = BasicDraw.projection_map_dict[method]["single"](0, 0, 0, rot_x, rot_y, rot_z, trans_x,
-                                                                               trans_y, trans_z)
-            end_x, end_y = BasicDraw.projection_map_dict[method]["single"](0, 0, -50, rot_x, rot_y, rot_z, trans_x,
-                                                                           trans_y, trans_z)
-            self.draw_line(start_x, start_y, end_x, end_y, color="#0000ff")
-            self.draw_text(end_x, end_y, text='Z轴', color='#0000ff')
+    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[],
+                  method="正"):
+
         for i in range(6):
             if custom_color:
                 color = custom_color[i]
             else:
                 color = "#000000"
-            self.draw_rectangle(BasicDraw.projection_map_dict[method]["multi"](coordinates[i], rot_x, rot_y, rot_z, trans_x, trans_y, trans_z), color)
+            self.draw_rectangle(
+                BasicDraw.projection_map_dict[self.projection_method]["multi"](coordinates[i], rot_x, rot_y, rot_z,
+                                                                               trans_x, trans_y,
+                                                                               trans_z), color)
 
     def polygon_fill(self, polygon, color="#0000ff"):
         # Find this poly's highest point and lowest point
@@ -127,3 +194,7 @@ class BasicDraw:
         x += self.WIDTH // 2
         y += self.HEIGHT // 2
         return (x, y) * 2
+
+    def map_into_range(self, original_value, original_min, original_max, new_min, new_max):
+        new_value = (original_value - original_min) * (new_max - new_min) / (original_max - original_min) + new_min
+        return new_value
