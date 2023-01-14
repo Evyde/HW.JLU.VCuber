@@ -30,6 +30,13 @@ jobs:
         standalone: true
         onefile: true
         enable-plugins: tk-inter, numpy
+        disable-console: true
+        windows-icon-from-ico: ./icon.ico
+        windows-company-name: Jilin University
+        windows-product-name: VCuber
+        windows-file-version: 0.0.0.1
+        windows-file-description: A simple cube drawing program.
+
 
     - name: Deploy to pre-release
       uses: "marvinpinto/action-automatic-releases@latest"

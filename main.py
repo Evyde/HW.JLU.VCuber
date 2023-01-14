@@ -2,7 +2,7 @@ import itertools
 import math
 import threading
 import random
-from tkinter import Tk
+from tkinter import Tk, PhotoImage
 from BasicDraw import BasicDraw
 import Coordinates
 
@@ -11,6 +11,12 @@ AXIS_LENGTH = 50
 
 window = Tk()
 window.title("VCuber - Made By Evyde")
+
+with open("icon.ico", "wb") as tmp:
+    import icon
+    tmp.write(icon.img)
+
+window.iconbitmap("./icon.ico")
 
 a = BasicDraw(window, MAX_X, MAX_Y, axis_x=-MAX_X // 2 + 2 * AXIS_LENGTH, axis_y=-MAX_Y // 2 + 2 * AXIS_LENGTH)
 
