@@ -30,6 +30,8 @@ x_speed = 0
 y_speed = 0
 ctrl = False
 axis = True
+retard_lock = False
+last_time = time.perf_counter() * 1000
 
 
 def do_popup(event):
@@ -75,29 +77,41 @@ def do_ctrl(ctrl_status):
 
 
 def do_rotation(event):
-    global rotation_x, rotation_y, last_x_angle, last_y_angle, x_speed, y_speed
+    global rotation_x, rotation_y, last_x_angle, last_y_angle, x_speed, y_speed, retard_lock, last_time
+    retard_lock = True
     if ctrl:
         rotation_y = event.x / MAX_X * 360 % 360
     else:
         rotation_x = event.y / MAX_Y * 360 % 360
-    div_time = time.perf_counter() * 1000
-    x_speed = (last_x_angle - rotation_x) / div_time
-    y_speed = (last_y_angle - rotation_y) / div_time
+    temp_time = time.perf_counter() * 1000
+    div_time = temp_time - last_time
+    last_time = temp_time
+    x_speed = -(last_x_angle - rotation_x) / div_time
+    y_speed = -(last_y_angle - rotation_y) / div_time
     last_x_angle = rotation_x
     last_y_angle = rotation_y
 
 
-def do_retard(event):
-    global rotation_x, rotation_y, x_speed, y_speed
-    rotation_x += x_speed - get_displacement(x_speed, RETARD_TIME)
-    rotation_y += y_speed - get_displacement(y_speed, RETARD_TIME)
-    window.after(1, lambda: do_retard(""))
+def start_retard(event):
+    global retard_lock
+    retard_lock = False
+    do_retard(0)
 
 
-def get_displacement(initial_velocity, time_t):
-    acceleration = -initial_velocity / time_t  # 加速度
-    displacement = initial_velocity * time_t + 0.5 * acceleration * time_t ** 2
-    return displacement
+def do_retard(now_tick):
+    global rotation_x, rotation_y, x_speed, y_speed, retard_lock
+    if retard_lock or now_tick >= RETARD_TIME:
+        return
+    rotation_x += x_speed
+    rotation_y += y_speed
+    x_speed += get_now_speed(x_speed, RETARD_TIME, now_tick)
+    y_speed += get_now_speed(y_speed, RETARD_TIME, now_tick)
+    window.after(1, lambda: do_retard(now_tick + 1))
+
+
+def get_now_speed(initial_velocity, total_time, now_time):
+    acceleration = -initial_velocity / total_time
+    return acceleration * now_time
 
 
 def fps_timer():
@@ -190,7 +204,7 @@ if __name__ == "__main__":
     window.bind("<B1-Motion>", do_rotation)
     window.bind("<KeyPress-Control_L>", lambda _: do_ctrl(True))
     window.bind("<KeyRelease-Control_L>", lambda _: do_ctrl(False))
-    # window.bind("<ButtonRelease-1>", do_retard)
+    window.bind("<ButtonRelease-1>", start_retard)
 
     # Draw and loop
     update()
