@@ -111,7 +111,7 @@ def update():
     global rotation_x, rotation_y, rotation_z, frame, translation_x, translation_y, translation_z, fps, axis
     frame += 1
     draw.clear()
-    draw.draw_cube(simple_cube, rot_z=rotation_z, rot_x=rotation_x, rot_y=rotation_y, method="正",
+    draw.draw_cube(simple_cube, rot_z=rotation_z, rot_x=rotation_x, rot_y=rotation_y,
                    custom_color=COLOR_LIST, trans_x=translation_x, trans_y=translation_y, trans_z=translation_z)
     if axis:
         draw.draw_axis(AXIS_LENGTH, rotation_x, rotation_y, rotation_z)

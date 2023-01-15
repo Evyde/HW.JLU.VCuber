@@ -61,8 +61,13 @@ class BasicDraw:
             self.draw_pixel(x, y, color)
 
     def draw_line(self, start_x: int, start_y: int, end_x: int, end_y: int, color="#000000"):
-        for coordinate in Coordinates.bresenham(start_x, start_y, end_x, end_y):
-            self.draw_pixel(coordinate[0], coordinate[1], color)
+        # for coordinate in Coordinates.bresenham(start_x, start_y, end_x, end_y):
+        #     self.draw_pixel(coordinate[0], coordinate[1], color)
+        self.__panel.create_line(
+            start_x + self.WIDTH // 2, start_y + self.HEIGHT // 2,
+            end_x + self.WIDTH // 2, end_y + self.HEIGHT // 2,
+            fill=color, smooth=False, width=1
+        )
 
     def draw_lines(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
@@ -104,7 +109,8 @@ class BasicDraw:
             temp_color[i] = "ff"
             temp_color = "#{}".format("".join(temp_color))
             end_x, end_y, end_z = temp_coordinate
-            end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z, rot_x, rot_y, rot_z)
+            end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z, rot_x,
+                                                                                           rot_y, rot_z)
             self.draw_line(start_x - end_x, start_y - end_y, start_x + end_x, start_y + end_y, color=temp_color)
             self.draw_text(start_x + end_x, start_y + end_y, text=text_tuple[i], color=temp_color)
 
@@ -163,9 +169,8 @@ class BasicDraw:
             self.draw_line(start_x, start_y, end_x, end_y, custom_color)
             # self.panel.create_line(start_x, start_y, end_x, end_y, fill=custom_color, width=1, smooth=True)
 
-    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0, custom_color=[],
-                  method="正"):
-
+    def draw_cube(self, coordinates: tuple, rot_x=0, rot_y=0, rot_z=0, trans_x=0, trans_y=0, trans_z=0,
+                  custom_color=[]):
         for i in range(6):
             if custom_color:
                 color = custom_color[i]

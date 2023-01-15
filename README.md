@@ -51,3 +51,10 @@ The init method of `BasicDraw` takes 4 arguments, which are:
 You can see other method's usage above. 
 
 When finish drawing, do not forget to call the `tkinter.mainloop()` to maintain the window.
+
+## Notice
+
+Since performance issues, I've changed my custom draw method from bresenham to tkinter's `create_line`
+when I ensure my bresenham works properly. When using my method, it is 5 FPS in PC, 60 FPS in M1 macOS,
+which is unbearable. If you want to experience the origin version, please edit the `draw_line` method in `BasicDraw`,
+comment line 66-70 and uncomment line 64-65.
