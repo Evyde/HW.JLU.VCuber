@@ -2,6 +2,7 @@ import base64
 import math
 import tempfile
 import time
+import tkinter
 from tkinter import Tk, Menu
 from BasicDraw import BasicDraw
 import Coordinates
@@ -27,6 +28,7 @@ last_x_angle = 0
 last_y_angle = 0
 x_speed = 0
 y_speed = 0
+ctrl = False
 
 
 def do_popup(event):
@@ -38,15 +40,15 @@ def do_popup(event):
 
 
 def do_translation(event):
-    global rotation_x, rotation_y, rotation_z, translation_x, translation_y, translation_z
+    global rotation_x, rotation_y, rotation_z, translation_x, translation_y, translation_z, ctrl
     match event.char:
-        case 'a':
-            translation_x -= TRANSLATION_STEP
-        case 'd':
-            translation_x += TRANSLATION_STEP
         case 'w':
-            translation_y -= TRANSLATION_STEP
+            translation_x -= TRANSLATION_STEP
         case 's':
+            translation_x += TRANSLATION_STEP
+        case 'a':
+            translation_y -= TRANSLATION_STEP
+        case 'd':
             translation_y += TRANSLATION_STEP
         case 'q':
             translation_z -= TRANSLATION_STEP
@@ -56,12 +58,16 @@ def do_translation(event):
             rotation_z -= ROTATION_STEP
         case 'x':
             rotation_z += ROTATION_STEP
+    if event.keycode == 989919486:
+        ctrl = not ctrl
 
 
 def do_rotation(event):
     global rotation_x, rotation_y, last_x_angle, last_y_angle, x_speed, y_speed
-    rotation_y = event.x / MAX_X * 360 % 360
-    rotation_x = event.y / MAX_Y * 360 % 360
+    if ctrl:
+        rotation_y = event.x / MAX_X * 360 % 360
+    else:
+        rotation_x = event.y / MAX_Y * 360 % 360
     div_time = time.perf_counter() * 1000
     x_speed = (last_x_angle - rotation_x) / div_time
     y_speed = (last_y_angle - rotation_y) / div_time
@@ -93,7 +99,7 @@ def update():
     global rotation_x, rotation_y, rotation_z, frame, translation_x, translation_y, translation_z, fps
     frame += 1
     draw.clear()
-    draw.draw_axis(AXIS_LENGTH, rotation_x, rotation_x, rotation_x)
+    draw.draw_axis(AXIS_LENGTH, rotation_x, rotation_y, rotation_z)
     draw.draw_cube(simple_cube, rot_z=rotation_z, rot_x=rotation_x, rot_y=rotation_y, method="正",
                    custom_color=COLOR_LIST, trans_x=translation_x, trans_y=translation_y, trans_z=translation_z)
     draw.draw_cube_status(
@@ -107,7 +113,9 @@ def update():
     )
     draw.draw_text(-MAX_X // 2 + 50, -MAX_Y // 2 + 10, "FPS: {}".format(fps), "#000000")
     if introduction:
-        draw.draw_text(MAX_X // 2 - 100, -MAX_Y // 2 + 30, "WSADQE: x, y, z轴平移\nZX: 绕Z轴旋转\n当前: {}投影".format(draw.get_method()))
+        draw.draw_text(MAX_X // 2 - 100, -MAX_Y // 2 + 50,
+                       "鼠标拖动: 绕X, Y轴旋转\nCtrl: 切换单独绕X, Y轴旋转\nWSADQE: X, Y, Z轴平移\nZX: 绕Z轴旋转\n当前: {}投影".format(
+                           draw.get_method()))
     window.after(1, update)
 
 

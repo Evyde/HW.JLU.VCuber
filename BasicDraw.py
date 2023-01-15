@@ -104,7 +104,7 @@ class BasicDraw:
             temp_color[i] = "ff"
             temp_color = "#{}".format("".join(temp_color))
             end_x, end_y, end_z = temp_coordinate
-            end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z)
+            end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z, rot_x, rot_y, rot_z)
             self.draw_line(start_x - end_x, start_y - end_y, start_x + end_x, start_y + end_y, color=temp_color)
             self.draw_text(start_x + end_x, start_y + end_y, text=text_tuple[i], color=temp_color)
 
@@ -129,20 +129,29 @@ class BasicDraw:
             # Draw oval that represent for cube.
             x, y = \
                 BasicDraw.projection_map_dict[self.projection_method]["single"](
-                        cubes_status[cube_name]["center_x"],
-                        cubes_status[cube_name]["center_y"],
-                        cubes_status[cube_name]["center_z"],
-                        trans_x=self.map_into_range(cubes_status[cube_name]["trans_x"], -self.WIDTH // 2, self.WIDTH // 2, -self.axis_length, self.axis_length),
-                        trans_y=self.map_into_range(cubes_status[cube_name]["trans_y"], -self.HEIGHT // 2, self.HEIGHT // 2, -self.axis_length, self.axis_length),
-                        trans_z=self.map_into_range(cubes_status[cube_name]["trans_z"], -(math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2)), math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2), -math.sqrt(self.axis_length ** 2 + self.axis_length ** 2), math.sqrt(self.axis_length ** 2 + self.axis_length ** 2)),
-                        rot_x=cubes_status[cube_name]["rot_x"],
-                        rot_y=cubes_status[cube_name]["rot_y"],
-                        rot_z=cubes_status[cube_name]["rot_z"]
-                    )
+                    cubes_status[cube_name]["center_x"],
+                    cubes_status[cube_name]["center_y"],
+                    cubes_status[cube_name]["center_z"],
+                    trans_x=self.map_into_range(cubes_status[cube_name]["trans_x"], -self.WIDTH // 2, self.WIDTH // 2,
+                                                -self.axis_length, self.axis_length),
+                    trans_y=self.map_into_range(cubes_status[cube_name]["trans_y"], -self.HEIGHT // 2, self.HEIGHT // 2,
+                                                -self.axis_length, self.axis_length),
+                    trans_z=self.map_into_range(cubes_status[cube_name]["trans_z"],
+                                                -(math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2)),
+                                                math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2),
+                                                -math.sqrt(self.axis_length ** 2 + self.axis_length ** 2),
+                                                math.sqrt(self.axis_length ** 2 + self.axis_length ** 2)),
+                    rot_x=cubes_status[cube_name]["rot_x"],
+                    rot_y=cubes_status[cube_name]["rot_y"],
+                    rot_z=cubes_status[cube_name]["rot_z"]
+                )
             # Draw cube name
-            self.draw_text(self.axis_x + x, self.axis_y + y + 20, text=cube_name, color=cubes_status[cube_name]["color"])
+            self.draw_text(self.axis_x + x, self.axis_y + y + 20, text=cube_name,
+                           color=cubes_status[cube_name]["color"])
             # Draw cube point
-            self.__panel.create_oval(self.map_coordinates(self.axis_x + x, self.axis_y + y), outline=cubes_status[cube_name]["color"], fill=cubes_status[cube_name]["color"], width=5)
+            self.__panel.create_oval(self.map_coordinates(self.axis_x + x, self.axis_y + y),
+                                     outline=cubes_status[cube_name]["color"], fill=cubes_status[cube_name]["color"],
+                                     width=5)
 
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000", fill=False):
         lines = len(coordinates)
