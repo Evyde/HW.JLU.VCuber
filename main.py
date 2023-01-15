@@ -58,7 +58,7 @@ def do_translation(event):
             rotation_z -= ROTATION_STEP
         case 'x':
             rotation_z += ROTATION_STEP
-    if event.keycode == 989919486:
+    if event.keycode == 989919486 or event.keycode == 37 or event.keycode == 109:
         ctrl = not ctrl
 
 
@@ -113,8 +113,8 @@ def update():
     )
     draw.draw_text(-MAX_X // 2 + 50, -MAX_Y // 2 + 10, "FPS: {}".format(fps), "#000000")
     if introduction:
-        draw.draw_text(MAX_X // 2 - 100, -MAX_Y // 2 + 50,
-                       "鼠标拖动: 绕X, Y轴旋转\nCtrl: 切换单独绕X, Y轴旋转\nWSADQE: X, Y, Z轴平移\nZX: 绕Z轴旋转\n当前: {}投影".format(
+        draw.draw_text(MAX_X // 2 - 100, -MAX_Y // 2 + 60,
+                       "鼠标拖动: 绕X, Y轴旋转\nCtrl: 切换单独绕X, Y轴旋转\nWSADQE: X, Y, Z轴平移\nZX: 绕Z轴旋转\n鼠标右键: 呼出菜单\n当前: {}投影".format(
                            draw.get_method()))
     window.after(1, update)
 
@@ -165,6 +165,7 @@ if __name__ == "__main__":
 
     # Bind event
     window.bind("<Button-2>", do_popup)
+    window.bind("<Button-3>", do_popup)
     window.bind("<Key>", do_translation)
     window.bind("<B1-Motion>", do_rotation)
     # window.bind("<ButtonRelease-1>", do_retard)
