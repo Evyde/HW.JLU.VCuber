@@ -69,9 +69,9 @@ def do_translation(event):
             return
 
 
-def do_ctrl(event):
+def do_ctrl(ctrl_status):
     global ctrl
-    ctrl = not ctrl
+    ctrl = ctrl_status
 
 
 def do_rotation(event):
@@ -188,8 +188,8 @@ if __name__ == "__main__":
     window.bind("<Button-3>", do_popup)
     window.bind("<Key>", do_translation)
     window.bind("<B1-Motion>", do_rotation)
-    window.bind("<KeyPress-Control_L>", do_ctrl)
-    window.bind("<KeyRelease-Control_L>", do_ctrl)
+    window.bind("<KeyPress-Control_L>", lambda _: do_ctrl(True))
+    window.bind("<KeyRelease-Control_L>", lambda _: do_ctrl(False))
     # window.bind("<ButtonRelease-1>", do_retard)
 
     # Draw and loop

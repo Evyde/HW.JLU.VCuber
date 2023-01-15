@@ -61,13 +61,13 @@ class BasicDraw:
             self.draw_pixel(x, y, color)
 
     def draw_line(self, start_x: int, start_y: int, end_x: int, end_y: int, color="#000000"):
-        # for coordinate in Coordinates.bresenham(start_x, start_y, end_x, end_y):
-        #     self.draw_pixel(coordinate[0], coordinate[1], color)
-        self.__panel.create_line(
-            start_x + self.WIDTH // 2, start_y + self.HEIGHT // 2,
-            end_x + self.WIDTH // 2, end_y + self.HEIGHT // 2,
-            fill=color, smooth=False, width=1
-        )
+        for coordinate in Coordinates.bresenham(start_x, start_y, end_x, end_y):
+            self.draw_pixel(coordinate[0], coordinate[1], color)
+        # self.__panel.create_line(
+        #     start_x + self.WIDTH // 2, start_y + self.HEIGHT // 2,
+        #     end_x + self.WIDTH // 2, end_y + self.HEIGHT // 2,
+        #     fill=color, smooth=False, width=1
+        # )
 
     def draw_lines(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
