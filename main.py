@@ -29,6 +29,7 @@ last_y_angle = 0
 x_speed = 0
 y_speed = 0
 ctrl = False
+axis = True
 
 
 def do_popup(event):
@@ -44,22 +45,33 @@ def do_translation(event):
     match event.char:
         case 'w':
             translation_x -= TRANSLATION_STEP
+            return
         case 's':
             translation_x += TRANSLATION_STEP
+            return
         case 'a':
             translation_y -= TRANSLATION_STEP
+            return
         case 'd':
             translation_y += TRANSLATION_STEP
+            return
         case 'q':
             translation_z -= TRANSLATION_STEP
+            return
         case 'e':
             translation_z += TRANSLATION_STEP
+            return
         case 'z':
             rotation_z -= ROTATION_STEP
+            return
         case 'x':
             rotation_z += ROTATION_STEP
-    if event.keycode == 989919486 or event.keycode == 37 or event.keycode == 109:
-        ctrl = not ctrl
+            return
+
+
+def do_ctrl(event):
+    global ctrl
+    ctrl = not ctrl
 
 
 def do_rotation(event):
@@ -96,25 +108,26 @@ def fps_timer():
 
 
 def update():
-    global rotation_x, rotation_y, rotation_z, frame, translation_x, translation_y, translation_z, fps
+    global rotation_x, rotation_y, rotation_z, frame, translation_x, translation_y, translation_z, fps, axis
     frame += 1
     draw.clear()
-    draw.draw_axis(AXIS_LENGTH, rotation_x, rotation_y, rotation_z)
     draw.draw_cube(simple_cube, rot_z=rotation_z, rot_x=rotation_x, rot_y=rotation_y, method="正",
                    custom_color=COLOR_LIST, trans_x=translation_x, trans_y=translation_y, trans_z=translation_z)
-    draw.draw_cube_status(
-        {
-            "方块儿": {
-                "color": COLOR_LIST[0], "center_x": 0, "center_y": 0, "center_z": 0,
-                "trans_x": translation_x, "trans_y": translation_y, "trans_z": translation_z,
-                "rot_z": rotation_z, "rot_x": rotation_x, "rot_y": rotation_y
+    if axis:
+        draw.draw_axis(AXIS_LENGTH, rotation_x, rotation_y, rotation_z)
+        draw.draw_cube_status(
+            {
+                "🤣": {
+                    "color": COLOR_LIST[0], "center_x": 0, "center_y": 0, "center_z": 0,
+                    "trans_x": translation_x, "trans_y": translation_y, "trans_z": translation_z,
+                    "rot_z": rotation_z, "rot_x": rotation_x, "rot_y": rotation_y
+                }
             }
-        }
-    )
+        )
     draw.draw_text(-MAX_X // 2 + 50, -MAX_Y // 2 + 10, "FPS: {}".format(fps), "#000000")
     if introduction:
-        draw.draw_text(MAX_X // 2 - 100, -MAX_Y // 2 + 60,
-                       "鼠标拖动: 绕X, Y轴旋转\nCtrl: 切换单独绕X, Y轴旋转\nWSADQE: X, Y, Z轴平移\nZX: 绕Z轴旋转\n鼠标右键: 呼出菜单\n当前: {}投影".format(
+        draw.draw_text(MAX_X // 2 - 120, -MAX_Y // 2 + 60,
+                       "鼠标拖动: 绕X, Y轴旋转\nCtrl+鼠标拖动: 切换单独绕X, Y轴旋转\nWSADQE: X, Y, Z轴平移\nZX: 绕Z轴旋转\n鼠标右键: 呼出菜单\n当前: {}投影".format(
                            draw.get_method()))
     window.after(1, update)
 
@@ -122,6 +135,11 @@ def update():
 def toggle_introduction():
     global introduction
     introduction = not introduction
+
+
+def toggle_axis_cube_status():
+    global axis
+    axis = not axis
 
 
 def reset():
@@ -159,7 +177,9 @@ if __name__ == "__main__":
     projection.add_command(label="斜等轴投影", command=lambda: draw.change_projection_method("斜等轴"))
     popup.add_cascade(label="投影切换", menu=projection)
     popup.add_command(label="重置", command=reset)
+    popup.add_separator()
     popup.add_command(label="开/关使用说明", command=toggle_introduction)
+    popup.add_command(label="开/关坐标轴和方块位置显示", command=toggle_axis_cube_status)
     popup.add_separator()
     popup.add_command(label="退出", command=window.destroy)
 
@@ -168,6 +188,8 @@ if __name__ == "__main__":
     window.bind("<Button-3>", do_popup)
     window.bind("<Key>", do_translation)
     window.bind("<B1-Motion>", do_rotation)
+    window.bind("<KeyPress-Control_L>", do_ctrl)
+    window.bind("<KeyRelease-Control_L>", do_ctrl)
     # window.bind("<ButtonRelease-1>", do_retard)
 
     # Draw and loop

@@ -146,12 +146,12 @@ class BasicDraw:
                     rot_z=cubes_status[cube_name]["rot_z"]
                 )
             # Draw cube name
-            self.draw_text(self.axis_x + x, self.axis_y + y + 20, text=cube_name,
+            self.draw_text(self.axis_x + x, self.axis_y + y, text=cube_name,
                            color=cubes_status[cube_name]["color"])
             # Draw cube point
-            self.__panel.create_oval(self.map_coordinates(self.axis_x + x, self.axis_y + y),
-                                     outline=cubes_status[cube_name]["color"], fill=cubes_status[cube_name]["color"],
-                                     width=5)
+            # self.__panel.create_oval(self.map_coordinates(self.axis_x + x, self.axis_y + y),
+            #                          outline=cubes_status[cube_name]["color"], fill=cubes_status[cube_name]["color"],
+            #                          width=5)
 
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000", fill=False):
         lines = len(coordinates)
