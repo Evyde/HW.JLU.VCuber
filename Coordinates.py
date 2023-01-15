@@ -64,8 +64,9 @@ def basic_trans(rot_x, rot_y, rot_z, trans_x, trans_y, trans_z, x, y, z):
                              [0, 0, 1]])
     rot_matrix = rot_matrix_x @ rot_matrix_y @ rot_matrix_z
     coords = np.array([x, y, z])
-    coords = rot_matrix @ coords
     coords += np.array([trans_x, trans_y, trans_z])
+    coords = rot_matrix @ coords
+
     return coords
 
 

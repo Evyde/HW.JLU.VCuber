@@ -1,9 +1,6 @@
-import itertools
+import math
 from tkinter import Canvas
 import Coordinates
-
-
-# TODO: 将画坐标轴的步骤抽象，可以使用itertools.permutations，并且用一个点在坐标轴上表示正方体的位置（百分比计算）
 
 
 class BasicDraw:
@@ -34,10 +31,13 @@ class BasicDraw:
             # Create default canvas
             canvas = Canvas(window, width=width, height=height, bg=background_color)
         canvas.pack()
-        self.panel = canvas
+        self.__panel = canvas
 
     def clear(self):
-        self.panel.delete("all")
+        self.__panel.delete("all")
+
+    def get_panel(self):
+        return self.__panel
 
     def update_cached_variables(self):
         pass
@@ -49,7 +49,7 @@ class BasicDraw:
     def draw_pixel(self, x: int, y: int, color="#000000"):
         # :) Treat 0 square's rectangle as a pixel.
         # It is faster than PhotoImage.put() according to https://gist.github.com/calebmadrigal/81f3b9de14f54ac355f7
-        self.panel.create_oval(self.map_coordinates(x, y), outline=color, width=1)
+        self.__panel.create_oval(self.map_coordinates(x, y), outline=color, width=1)
 
     def draw_pixels(self, coordinates: tuple[tuple], custom_color=False):
         color = "#000000"
@@ -75,7 +75,7 @@ class BasicDraw:
 
     def draw_text(self, x: int, y: int, text="", color="#000000"):
         x, y, _, _ = self.map_coordinates(x, y)
-        self.panel.create_text(x, y, text=text, fill=color)
+        self.__panel.create_text(x, y, text=text, fill=color)
 
     def draw_axis(self, axis_length, rot_x=0, rot_y=0, rot_z=0):
         """
@@ -106,7 +106,7 @@ class BasicDraw:
             end_x, end_y, end_z = temp_coordinate
             end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z, rot_x,
                                                                                            rot_y, rot_z)
-            self.draw_line(start_x, start_y, start_x + end_x, start_y + end_y, color=temp_color)
+            self.draw_line(start_x - end_x, start_y - end_y, start_x + end_x, start_y + end_y, color=temp_color)
             self.draw_text(start_x + end_x, start_y + end_y, text=text_tuple[i], color=temp_color)
 
     def draw_cube_status(self, cubes_status: dict):
@@ -128,12 +128,14 @@ class BasicDraw:
         """
         for cube_name in cubes_status.keys():
             # Draw oval that represent for cube.
-            # TODO: Map the coordinate first then project, like (0 + trans_x, 0 + trans_y, 0 + trans_z)
             x, y = \
                 BasicDraw.projection_map_dict[self.projection_method]["single"](
-                        cubes_status[cube_name]["center_x"] + self.map_into_range(cubes_status[cube_name]["trans_x"], -self.WIDTH // 2, self.WIDTH // 2, 0, -self.axis_length),
-                        cubes_status[cube_name]["center_y"] + self.map_into_range(cubes_status[cube_name]["trans_y"], -self.HEIGHT // 2, self.HEIGHT // 2, 0, -self.axis_length),
+                        cubes_status[cube_name]["center_x"],
+                        cubes_status[cube_name]["center_y"],
                         cubes_status[cube_name]["center_z"],
+                        trans_x=self.map_into_range(cubes_status[cube_name]["trans_x"], -self.WIDTH // 2, self.WIDTH // 2, -self.axis_length // 2, self.axis_length // 2),
+                        trans_y=self.map_into_range(cubes_status[cube_name]["trans_y"], -self.HEIGHT // 2, self.HEIGHT // 2, -self.axis_length // 2, self.axis_length // 2),
+                        trans_z=self.map_into_range(cubes_status[cube_name]["trans_z"], -(math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2)), math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2), -math.sqrt((self.axis_length // 2) ** 2 + (self.axis_length // 2) ** 2), math.sqrt((self.axis_length // 2) ** 2 + (self.axis_length // 2) ** 2)),
                         rot_x=cubes_status[cube_name]["rot_x"],
                         rot_y=cubes_status[cube_name]["rot_y"],
                         rot_z=cubes_status[cube_name]["rot_z"]
@@ -141,7 +143,7 @@ class BasicDraw:
             # Draw cube name
             self.draw_text(self.axis_x + x, self.axis_y + y + 20, text=cube_name, color=cubes_status[cube_name]["color"])
             # Draw cube point
-            self.panel.create_oval(self.map_coordinates(self.axis_x + x, self.axis_y + y), outline=cubes_status[cube_name]["color"], fill=cubes_status[cube_name]["color"], width=30)
+            self.__panel.create_oval(self.map_coordinates(self.axis_x + x, self.axis_y + y), outline=cubes_status[cube_name]["color"], fill=cubes_status[cube_name]["color"], width=5)
 
     def draw_rectangle(self, coordinates: tuple, custom_color="#000000", fill=False):
         lines = len(coordinates)
@@ -195,6 +197,7 @@ class BasicDraw:
         y += self.HEIGHT // 2
         return (x, y) * 2
 
-    def map_into_range(self, original_value, original_min, original_max, new_min, new_max):
+    @staticmethod
+    def map_into_range(original_value, original_min, original_max, new_min, new_max):
         new_value = (original_value - original_min) * (new_max - new_min) / (original_max - original_min) + new_min
-        return new_value
+        return int(new_value)
