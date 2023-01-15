@@ -104,8 +104,7 @@ class BasicDraw:
             temp_color[i] = "ff"
             temp_color = "#{}".format("".join(temp_color))
             end_x, end_y, end_z = temp_coordinate
-            end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z, rot_x,
-                                                                                           rot_y, rot_z)
+            end_x, end_y = BasicDraw.projection_map_dict[self.projection_method]["single"](end_x, end_y, end_z)
             self.draw_line(start_x - end_x, start_y - end_y, start_x + end_x, start_y + end_y, color=temp_color)
             self.draw_text(start_x + end_x, start_y + end_y, text=text_tuple[i], color=temp_color)
 
@@ -133,9 +132,9 @@ class BasicDraw:
                         cubes_status[cube_name]["center_x"],
                         cubes_status[cube_name]["center_y"],
                         cubes_status[cube_name]["center_z"],
-                        trans_x=self.map_into_range(cubes_status[cube_name]["trans_x"], -self.WIDTH // 2, self.WIDTH // 2, -self.axis_length // 2, self.axis_length // 2),
-                        trans_y=self.map_into_range(cubes_status[cube_name]["trans_y"], -self.HEIGHT // 2, self.HEIGHT // 2, -self.axis_length // 2, self.axis_length // 2),
-                        trans_z=self.map_into_range(cubes_status[cube_name]["trans_z"], -(math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2)), math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2), -math.sqrt((self.axis_length // 2) ** 2 + (self.axis_length // 2) ** 2), math.sqrt((self.axis_length // 2) ** 2 + (self.axis_length // 2) ** 2)),
+                        trans_x=self.map_into_range(cubes_status[cube_name]["trans_x"], -self.WIDTH // 2, self.WIDTH // 2, -self.axis_length, self.axis_length),
+                        trans_y=self.map_into_range(cubes_status[cube_name]["trans_y"], -self.HEIGHT // 2, self.HEIGHT // 2, -self.axis_length, self.axis_length),
+                        trans_z=self.map_into_range(cubes_status[cube_name]["trans_z"], -(math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2)), math.sqrt((self.HEIGHT // 2) ** 2 + (self.WIDTH // 2) ** 2), -math.sqrt(self.axis_length ** 2 + self.axis_length ** 2), math.sqrt(self.axis_length ** 2 + self.axis_length ** 2)),
                         rot_x=cubes_status[cube_name]["rot_x"],
                         rot_y=cubes_status[cube_name]["rot_y"],
                         rot_z=cubes_status[cube_name]["rot_z"]
@@ -201,3 +200,6 @@ class BasicDraw:
     def map_into_range(original_value, original_min, original_max, new_min, new_max):
         new_value = (original_value - original_min) * (new_max - new_min) / (original_max - original_min) + new_min
         return int(new_value)
+
+    def get_method(self):
+        return self.projection_method

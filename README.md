@@ -7,9 +7,9 @@ This is a homework from JLU's computer graphics lesson.
 ## Function
 
 - [X] Draw a cube using Bresenham to draw a line.
-- [ ] Switch through the menu to display the orthographic and oblique isometric projections of the cube.
-- [ ] Use keyboard to control the panning of this cube.
-- [ ] Use mouse to control the rotation of this cube.
+- [X] Switch through the menu to display the orthographic and oblique isometric projections of the cube.
+- [X] Use keyboard to control the panning of this cube.
+- [X] Use mouse to control the rotation of this cube.
 
 ## Library Usage
 
