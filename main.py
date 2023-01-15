@@ -80,9 +80,9 @@ def do_rotation(event):
     global rotation_x, rotation_y, last_x_angle, last_y_angle, x_speed, y_speed, retard_lock, last_time
     retard_lock = True
     if ctrl:
-        rotation_y = event.x / MAX_X * 360 % 360
+        rotation_y += event.x_root / MAX_X * 360 % 360 - rotation_y
     else:
-        rotation_x = event.y / MAX_Y * 360 % 360
+        rotation_x += event.y_root / MAX_Y * 360 % 360 - rotation_x
     temp_time = time.perf_counter() * 1000
     div_time = temp_time - last_time
     last_time = temp_time
