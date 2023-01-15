@@ -1,3 +1,4 @@
+import base64
 import itertools
 import math
 import threading
@@ -14,7 +15,7 @@ window.title("VCuber - Made By Evyde")
 
 with open("icon.ico", "wb") as tmp:
     import icon
-    tmp.write(icon.img)
+    tmp.write(base64.b64decode(icon.img))
 
 window.iconbitmap("./icon.ico")
 
